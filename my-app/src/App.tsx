@@ -131,6 +131,14 @@ const App: React.FC = () => {
     }
   };
 
+  const handleHomeClick = () => {
+    setSearch({
+      searchTokens: search.searchTokens,
+      searchTerm: ''
+    });
+    handleSearchClick();
+  }
+
   const calculateScore = (tile: Tile, searchTokens: string[]): number => {
     console.log("entered search algorithm"); //remove this
     let score: number = 0;
@@ -183,6 +191,7 @@ const App: React.FC = () => {
           onKeyPress={handleKeyPress}
         />
         <button onClick={handleSearchClick}>Search</button>
+        <button onClick={handleHomeClick}>Home</button>
       </div>
       <div className="content">
         <div className="item-list">
