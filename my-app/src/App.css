@@ -10,9 +10,15 @@
 
 .search-bar input {
   padding: 10px;
+  margin: 5px;
   width: 300px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.search-bar button {
+  margin: 5px;
+  height: 32px;
 }
 
 .content {
