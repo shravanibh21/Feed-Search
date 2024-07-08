@@ -21,8 +21,7 @@
 # Misc
 .DS_Store
 *.pem
-sanity.config.ts
-sanity.cli.ts
+
 
 # Typescript
 *.tsbuildinfo
