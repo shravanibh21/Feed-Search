@@ -2,13 +2,14 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import './App.css';
 import sanityClient from './client';
 import {Tile, searchState} from './types';
-
+import levenshtein from 'js-levenshtein';
 
 const App: React.FC = () => {
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [scoredTiles, setScoredTiles] = useState<Tile[]>([]);
   const [search, setSearch] = useState<searchState>({ searchTerm: '', searchTokens: [] });
   const { removeStopwords } = require('stopword');
+  const typoToleranceThreshold = 1; 
 
   // Initial data fetch: all tiles, no search in the beginning
   useEffect(() => {
@@ -144,16 +145,18 @@ const App: React.FC = () => {
     let score: number = 0;
     const filterTokens: string[] = removeStopwords(searchTokens);
     filterTokens.forEach(token => console.log(token)); //remove this
-    
+
     filterTokens.forEach(token => {
       const lowerSearchTerm = token.toLowerCase();
 
-      if (tile.title && tile.title.toLowerCase().includes(lowerSearchTerm)) score += 10; //Instant accept
+      if (tile.title && isSimilar(tile.title, lowerSearchTerm)) score += 10; //Instant accept
 
       if (Array.isArray(tile.authors)) { //Instant accept
-        if(tile.authors.some(author => author.name.toLowerCase().includes(lowerSearchTerm))) score += 8;
+        if (tile.authors.some(author => isSimilar(author.name, lowerSearchTerm))) {
+           score += 8;
+        }
       } else {
-        if(lowerSearchTerm === 'anonymous') score += 8;
+        if (isSimilar('anonymous', lowerSearchTerm)) score += 8;
       }
 
       if (tile.slug.current && tile.slug.current.toLowerCase().includes(lowerSearchTerm)) score += 6; //Instant accept
@@ -172,7 +175,23 @@ const App: React.FC = () => {
 
     });
 
+    console.log(tile.title + ": " + score);
     return score;
+  };
+
+  const isSimilar = (text: string, searchToken: string): boolean => {
+    const textTokens = text.toLowerCase().split(' ');
+    let simCheck: boolean = false;
+    if(text.toLowerCase().includes(searchToken.toLowerCase())) return true;
+    
+    textTokens.forEach(tokenIn => {
+      if(levenshtein(tokenIn, searchToken.toLowerCase()) <= typoToleranceThreshold) {
+        console.log("tokens matched");
+        simCheck = true;
+      }
+    });
+
+    return simCheck;
   };
 
   const filteredItems = (): Tile[] => {
