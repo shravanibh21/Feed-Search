@@ -277,33 +277,34 @@ export const tile = defineType({
   ],
   validation: (Rule: any) => [
     Rule.custom((document: any) => {
-      if (!document._id) {
+      if(document._id.includes('draft')) {
+        const previousValues = document.previousValues || {};
+
+        const fields = [
+          'title',
+          'slug',
+          'category',
+          'emoji',
+          'publishingDate',
+
+          'authors',
+          'subtiles',
+          'summary',
+          'tags',
+        ];
+
+        for (const field of fields) {
+          if (hasFieldChanged(document[field], previousValues[field])) {
+            return 'Warning: One or more fields have been updated.' +  
+              'Be sure to update the Last Updated field if publishing edits to the tile ';
+          }
+        }
+
+        return true;
+      } else {
         return true;
       }
 
-      const previousValues = document.previousValues || {};
-
-      const fields = [
-        'title',
-        'slug',
-        'category',
-        'emoji',
-        'publishingDate',
-
-        'authors',
-        'subtiles',
-        'summary',
-        'tags',
-      ];
-
-      for (const field of fields) {
-        if (hasFieldChanged(document[field], previousValues[field])) {
-          return 'Warning: One or more fields have been updated.' +  
-            'Be sure to update the Last Updated field if publishing edits to the tile ';
-        }
-      }
-
-      return true;
     }).warning(),
   ],
 });

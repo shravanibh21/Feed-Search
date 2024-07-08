@@ -152,9 +152,7 @@ const App: React.FC = () => {
       if (tile.title && isSimilar(tile.title, lowerSearchTerm)) score += 10; //Instant accept
 
       if (Array.isArray(tile.authors)) { //Instant accept
-        if (tile.authors.some(author => isSimilar(author.name, lowerSearchTerm))) {
-           score += 8;
-        }
+        if (tile.authors.some(author => isSimilar(author.name, lowerSearchTerm))) score += 8;
       } else {
         if (isSimilar('anonymous', lowerSearchTerm)) score += 8;
       }
