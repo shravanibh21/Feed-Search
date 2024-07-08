@@ -57,6 +57,9 @@ const toTitleCase = (str: string): string => {
             .join(' ');
 }
 
+const hasFieldChanged = (newValue: any, oldValue: any) => {
+  return JSON.stringify(newValue) !== JSON.stringify(oldValue);
+};
 
 export const tile = defineType({
   name: 'tile',
@@ -251,8 +254,56 @@ export const tile = defineType({
       type: 'number',
       initialValue: 0,
       hidden: true
-    })
+    }),
 
+    defineField({
+      name: 'previousValues',
+      title: 'Previous Values',
+      type: 'object',
+      fields: [
+        { name: 'title', type: 'string' },
+        { name: 'slug', type: 'slug' },
+        { name: 'category', type: 'string' },
+        { name: 'emoji', type: 'image' },
+        { name: 'publishingDate', type: 'datetime' },
+        // { name: 'updateDate', type: 'datetime' },
+        { name: 'authors', type: 'array', of: [{ type: 'reference', to: [{ type: 'author' }] }] },
+        { name: 'subtiles', type: 'array', of: [{ type: 'reference', to: [{ type: 'subtile' }] }] },
+        { name: 'summary', type: 'text' },
+        { name: 'tags', type: 'array', of: [{ type: 'string' }] },
+      ],
+      hidden: true,
+    }),
+  ],
+  validation: (Rule: any) => [
+    Rule.custom((document: any) => {
+      if (!document._id) {
+        return true;
+      }
+
+      const previousValues = document.previousValues || {};
+
+      const fields = [
+        'title',
+        'slug',
+        'category',
+        'emoji',
+        'publishingDate',
+
+        'authors',
+        'subtiles',
+        'summary',
+        'tags',
+      ];
+
+      for (const field of fields) {
+        if (hasFieldChanged(document[field], previousValues[field])) {
+          return Rule.warning('Warning: One or more fields have been updated.');
+        }
+      }
+
+      return true;
+    }),
   ],
 });
 
