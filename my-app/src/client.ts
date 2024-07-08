@@ -5,7 +5,6 @@ const sanityClient = createClient({
   dataset: 'production',
   useCdn: false,
   apiVersion: "2024-06-11",
-  //token: to be inserted,
   token: process.env.REACT_APP_SANITY_TOKEN,
 });
 
