@@ -180,9 +180,11 @@ const App: React.FC = () => {
   const isSimilar = (text: string, searchToken: string): boolean => {
     const textTokens = text.toLowerCase().split(' ');
     let simCheck: boolean = false;
-    if(text.toLowerCase().includes(searchToken.toLowerCase())) return true;
-    
-    textTokens.forEach(tokenIn => {
+
+    if(text.toLowerCase().includes(searchToken.toLowerCase())) return true; //substrings search
+    if(text.replaceAll(' ', '').toLowerCase().includes(searchToken.toLowerCase())) return true; //missing spaces
+
+    textTokens.forEach(tokenIn => { //distance = 1 tolerance
       if(levenshtein(tokenIn, searchToken.toLowerCase()) <= typoToleranceThreshold) {
         console.log("tokens matched");
         simCheck = true;
