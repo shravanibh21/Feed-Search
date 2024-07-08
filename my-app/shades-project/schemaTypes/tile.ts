@@ -298,12 +298,13 @@ export const tile = defineType({
 
       for (const field of fields) {
         if (hasFieldChanged(document[field], previousValues[field])) {
-          return Rule.warning('Warning: One or more fields have been updated.');
+          return 'Warning: One or more fields have been updated.' +  
+            'Be sure to update the Last Updated field if publishing edits to the tile ';
         }
       }
 
       return true;
-    }),
+    }).warning(),
   ],
 });
 
